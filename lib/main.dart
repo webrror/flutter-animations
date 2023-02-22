@@ -2,6 +2,8 @@ import 'package:anim1/animations/example1.dart';
 import 'package:anim1/animations/example2.dart';
 import 'package:flutter/material.dart';
 
+import 'animations/example3.dart';
+
 /* 
   0.0 = 0 degrees
   0.5 = 180 degrees
@@ -20,7 +22,8 @@ void main() {
     home: const Router(),
     routes: {
       '/e1':(context) => const Example1(),
-      '/e2':(context) => const Example2()
+      '/e2': (context) => const Example2(),
+      '/e3': (context) => const Example3()
     },
   ));
 }
@@ -56,6 +59,18 @@ class Router extends StatelessWidget {
               },
               title: const Text("Chained Animation"),
               subtitle: const Text("Example 2"),
+              trailing: const Icon(Icons.chevron_right_rounded),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+              onTap: () {
+                Navigator.pushNamed(context, '/e3');
+              },
+              title: const Text("Cube Animation"),
+              subtitle: const Text("Example 3"),
               trailing: const Icon(Icons.chevron_right_rounded),
             ),
           )

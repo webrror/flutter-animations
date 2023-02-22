@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'dart:math' show pi;
 
 enum CircleSide { left, right }
 
@@ -162,7 +162,7 @@ class _Example2State extends State<Example2> with TickerProviderStateMixin {
                           child: Container(
                             width: 150,
                             height: 150,
-                            color: Colors.indigo,
+                            color: Colors.indigoAccent,
                           ),
                         ),
                       );
@@ -181,7 +181,7 @@ class _Example2State extends State<Example2> with TickerProviderStateMixin {
                           child: Container(
                             width: 150,
                             height: 150,
-                            color: Colors.amber,
+                            color: Colors.redAccent,
                           ),
                         ),
                       );
