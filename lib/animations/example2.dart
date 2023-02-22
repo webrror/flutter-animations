@@ -56,14 +56,19 @@ class Example2 extends StatefulWidget {
   State<Example2> createState() => _Example2State();
 }
 
-class _Example2State extends State<Example2>
-    with SingleTickerProviderStateMixin {
+class _Example2State extends State<Example2> with TickerProviderStateMixin {
   late AnimationController _counterClockWiseRotationController;
   late Animation<double> _counterClockWiseRotationAnimation;
+
+  late AnimationController _flipController;
+  late Animation<double> _flipAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    // Counter clock wise animation
+
     _counterClockWiseRotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -74,12 +79,51 @@ class _Example2State extends State<Example2>
             parent: _counterClockWiseRotationController,
             curve: Curves.bounceOut));
 
-    _counterClockWiseRotationController.repeat();
+    // flip animation
+
+    _flipController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
+
+    _flipAnimation = Tween<double>(begin: 0, end: pi).animate(
+        CurvedAnimation(parent: _flipController, curve: Curves.bounceOut));
+
+    // status listeners
+
+    _counterClockWiseRotationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _flipAnimation = Tween<double>(
+                begin: _flipAnimation.value, end: _flipAnimation.value + pi)
+            .animate(CurvedAnimation(
+                parent: _flipController, curve: Curves.bounceOut));
+
+        _flipController
+          ..reset()
+          ..forward();
+      }
+    });
+
+    _flipController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _counterClockWiseRotationAnimation = Tween<double>(
+                begin: _counterClockWiseRotationAnimation.value,
+                end: _counterClockWiseRotationAnimation.value + -(pi / 2))
+            .animate(CurvedAnimation(
+                parent: _counterClockWiseRotationController,
+                curve: Curves.bounceOut));
+
+        _counterClockWiseRotationController
+          ..reset()
+          ..forward();
+      }
+    });
   }
 
   @override
   void dispose() {
     _counterClockWiseRotationController.dispose();
+    _flipController.dispose();
     super.dispose();
   }
 
@@ -105,21 +149,43 @@ class _Example2State extends State<Example2>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ClipPath(
-                    clipper: const SemiCircleClipper(side: CircleSide.left),
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      color: Colors.indigo,
-                    ),
+                  AnimatedBuilder(
+                    animation: _flipController,
+                    builder: (context, child) {
+                      return Transform(
+                        alignment: Alignment.centerRight,
+                        transform: Matrix4.identity()
+                          ..rotateY(_flipAnimation.value),
+                        child: ClipPath(
+                          clipper:
+                              const SemiCircleClipper(side: CircleSide.left),
+                          child: Container(
+                            width: 150,
+                            height: 150,
+                            color: Colors.indigo,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                  ClipPath(
-                    clipper: const SemiCircleClipper(side: CircleSide.right),
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      color: Colors.amber,
-                    ),
+                  AnimatedBuilder(
+                    animation: _flipController,
+                    builder: (context, child) {
+                      return Transform(
+                        alignment: Alignment.centerLeft,
+                        transform: Matrix4.identity()
+                          ..rotateY(_flipAnimation.value),
+                        child: ClipPath(
+                          clipper:
+                              const SemiCircleClipper(side: CircleSide.right),
+                          child: Container(
+                            width: 150,
+                            height: 150,
+                            color: Colors.amber,
+                          ),
+                        ),
+                      );
+                    },
                   )
                 ],
               ),
